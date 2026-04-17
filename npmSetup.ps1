@@ -9,7 +9,7 @@ DB = ""
 CLUSTER = ""
 PORT = 3000' > .env
 
-# Make directories for handlebars
+# Make needed directories
 mkdir views/layouts, models, controllers, public
 
 # style.css
