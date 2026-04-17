@@ -51,9 +51,9 @@ echo '<!DOCTYPE html>
 <body>
     <nav class="nav">
         <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/this">This</a></li>
-            <li><a href="/that">That</a></li>
+            <li><a href="/">home</a></li>
+            <li><a href="/this">this</a></li>
+            <li><a href="/about">about</a></li>
         </ul>
     </nav>
     {{{body}}}
@@ -61,6 +61,12 @@ echo '<!DOCTYPE html>
 </html>' > views/layouts/main.handlebars
 # Handlebars index
 echo '<h1>Welcome H1 title</h1>' > views/index.handlebars
+
+# Handlebars about
+echo "" > views/about.handlebars
+
+# Handlebars this (FOR SOMETHING)
+echo "" > views/this.handlebars
 
 # Create index.js
 echo "const express = require('express');
@@ -82,9 +88,22 @@ app.set('view engine', 'handlebars');
 // static files
 app.use(express.static('public'));
 
+// Home
 app.get('/', (req, res) => {
     res.render('index', {
-        title: 'Simple Node.js RESTful API'
+        title: 'Homepage'
+    });
+});
+// About
+app.get('/about', (req, res) => {
+    res.render('about', {
+        title: 'List of PERKELE'
+    });
+});
+// This
+app.get('/this', (req, res) => {
+    res.render('this', {
+        title: 'this is just this'
     });
 });
 

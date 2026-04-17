@@ -17,9 +17,22 @@ app.set('view engine', 'handlebars');
 // static files
 app.use(express.static('public'));
 
+// Home
 app.get('/', (req, res) => {
     res.render('index', {
-        title: 'Simple Node.js RESTful API'
+        title: 'Homepage'
+    });
+});
+// About
+app.get('/about', (req, res) => {
+    res.render('about', {
+        title: 'List of PERKELE'
+    });
+});
+// This
+app.get('/this', (req, res) => {
+    res.render('this', {
+        title: 'this is just this'
     });
 });
 
