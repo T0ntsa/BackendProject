@@ -19,5 +19,13 @@
     "express-handlebars": "^9.0.1",
     "mongoose": "^9.4.1"
   },
-  "keywords": []
+  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/T0ntsa/BackendProject.git"
+  },
+  "bugs": {
+    "url": "https://github.com/T0ntsa/BackendProject/issues"
+  },
+  "homepage": "https://github.com/T0ntsa/BackendProject#readme"
 }

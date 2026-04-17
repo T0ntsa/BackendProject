@@ -10,7 +10,33 @@ CLUSTER = ""
 PORT = 3000' > .env
 
 # Make directories for handlebars
-mkdir views/layouts, models, controllers
+mkdir views/layouts, models, controllers, public
+
+# style.css
+echo 'body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: #f0f0f0;
+}
+.nav ul {
+    list-style: none;
+    margin: 0 0 16px;
+    padding: 0;
+    display: flex;
+    gap: 42px;
+}
+.nav a {
+    text-decoration-thickness: 3px; 
+    text-decoration-color: rgb(147, 179, 255);
+    text-decoration-style: dashed;
+    padding: 8px 12px;
+    border-radius: 8px;
+}
+.nav a:hover {
+  background-color: rgb(147, 179, 255); /* highlight */
+  color: #0b1b3a;                       /* readable text on highlight */
+  text-decoration-color: #0b1b3a;       /* underline changes too */
+}' > public/style.css
 
 # Handlebars main
 echo '<!DOCTYPE html>
@@ -19,15 +45,54 @@ echo '<!DOCTYPE html>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style.css">
     <title>{{title}}</title>
 </head>
 <body>
+    <nav class="nav">
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/this">This</a></li>
+            <li><a href="/that">That</a></li>
+        </ul>
+    </nav>
     {{{body}}}
 </body>
 </html>' > views/layouts/main.handlebars
 # Handlebars index
 echo '<h1>Welcome H1 title</h1>' > views/index.handlebars
 
+# Create index.js
+echo "const express = require('express');
+const path = require('path');
+const exphbs = require('express-handlebars');
+const fs = require('fs');
+require('dotenv').config();
+
+const app = express();
+// We can can get json data from the client
+app.use(express.json());
+app.use(express.urlencoded({extended: false}));
+
+app.engine('handlebars', exphbs.engine({
+    defaultLayout: 'main',
+}));
+
+app.set('view engine', 'handlebars');
+// static files
+app.use(express.static('public'));
+
+app.get('/', (req, res) => {
+    res.render('index', {
+        title: 'Simple Node.js RESTful API'
+    });
+});
+
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+    console.log(``Server is running on port `${PORT}``);
+});" > index.js
 
 ### Start of the Node.js + packages ###
 # -y = YES to all promts
