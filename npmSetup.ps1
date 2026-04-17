@@ -121,8 +121,11 @@ npm init -y
 npm pkg set scripts.dev="nodemon index"
 
 # Packages
-npm i nodemon --save-dev | 
-npm i express | 
-npm i express-handlebars | 
-npm i dotenv | 
-npm i mongoose
+# npm i nodemon --save-dev
+# npm i express
+# npm i express-handlebars
+# npm i dotenv
+# npm i mongoose
+
+npm i express express-handlebars dotenv mongoose
+npm i -D nodemon
