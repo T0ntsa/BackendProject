@@ -63,10 +63,10 @@ echo '<!DOCTYPE html>
 echo '<h1>Welcome H1 title</h1>' > views/index.handlebars
 
 # Handlebars about
-echo "" > views/about.handlebars
+echo "<p>Hello, you are in about page</p>" > views/about.handlebars
 
 # Handlebars this (FOR SOMETHING)
-echo "" > views/this.handlebars
+echo "<p>Hello, you are in this page</p>" > views/this.handlebars
 
 # Create index.js
 echo "const express = require('express');
