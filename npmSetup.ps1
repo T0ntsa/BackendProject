@@ -1,6 +1,7 @@
 # Good to have from the get-go
 echo 'node_modules
-.env' > .gitignore
+.env
+scrum' > .gitignore
 
 # Basic .env variables
 echo 'DBUSER = ""
