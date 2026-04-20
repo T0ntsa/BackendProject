@@ -35,6 +35,9 @@ app.engine(
   "handlebars",
   exphbs.engine({
     defaultLayout: "main",
+    helpers: {
+    json: (context) => JSON.stringify(context, null, 2)
+  }
   }),
 );
 

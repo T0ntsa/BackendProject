@@ -9,6 +9,6 @@ const router = express.Router();
 
 router.get('/', taskController.getHome); 
 
-router.get('/task/:id', taskController.getTask);
+router.get('/tasks/:id', taskController.getTask);
 
 module.exports = router;
