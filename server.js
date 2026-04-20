@@ -5,6 +5,7 @@ const fs = require("fs");
 const mongoose = require("mongoose");
 require("dotenv").config();
 
+
 const app = express();
 
 app.use('', require('./routes/tasks'));
@@ -60,12 +61,8 @@ app.use(express.static("public"));
 //   });
 // });
 
-
 // Start the server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
-
-
-
