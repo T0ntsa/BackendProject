@@ -50,3 +50,32 @@ exports.register = async (req, res) => {
         res.status(400).json({ success: false, error: err.message });
     }
 };
+
+
+// Handle user login request (route POST /login)
+exports.login = async (req, res) => {
+    console.log('Login attempt received for email:', req.body.email);
+    const { email, password } = req.body;
+    // Validate email & password
+    if (!email || !password) {
+        return res.status(400).json({ success: false, error: 'Please provide an email and password' });
+    }
+
+    try {
+        // Check if user exists
+        const user = await User.findOne({ email: email.toLowerCase() }).select('+password'); // Include password 
+
+        // Check password
+        const isMatch = await user.matchPassword(password);
+
+        if (!user || !isMatch) {
+            return res.status(401).json({ success: false, error: 'Invalid credentials' }); 
+        }
+       
+        sendTokenResponse(user, 200, res);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, error: 'Server error' }); // 500 Server error
+    }
+};
+
