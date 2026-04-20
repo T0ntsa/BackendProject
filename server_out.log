@@ -1,0 +1,6 @@
+◇ injected env (3) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
+◇ injected env (0) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
+◇ injected env (0) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+Server running on port 5000
+MongoDB connected.
+Signup attempt received for email: testnextfix@example.com

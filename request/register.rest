@@ -1,0 +1,35 @@
+// admin
+POST http://localhost:5000/register
+Content-Type: application/json
+
+{
+    "email": "admin@abc.com", 
+    "password": "password",
+    "fullName": "admin",
+    "role": "admin"
+
+}
+
+### employee1
+POST http://localhost:5000/register
+Content-Type: application/json
+
+{
+    "email": "employee1@abc.com", 
+    "password": "password",
+    "fullName": "employee1",
+    "role": "employee"
+}
+
+### employee2
+POST http://localhost:5000/register
+Content-Type: application/json
+
+{
+    "email": "employee2@abc.com", 
+    "password": "password",
+    "fullName": "employee2",
+    "role": "employee"
+}
+
+
