@@ -5,6 +5,7 @@ const fs = require("fs");
 const mongoose = require("mongoose");
 require("dotenv").config();
 
+
 const app = express();
 // We can can get json data from the client
 app.use(express.json());
@@ -38,6 +39,10 @@ app.set("view engine", "handlebars");
 // static files
 app.use(express.static("public"));
 
+// import routes
+const authRoutes = require("./routes/auth");
+app.use("/api/auth", authRoutes);
+
 // Home
 app.get("/", (req, res) => {
   res.render("index", {
@@ -57,12 +62,8 @@ app.get("/this", (req, res) => {
   });
 });
 
-
 // Start the server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
-
-
-
