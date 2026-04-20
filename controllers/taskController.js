@@ -15,7 +15,7 @@ const getTask = async (req,res) => {
     try {
         const id = req.params.id;
         const product = await Task.findById(id);     
-        res.render('index', {
+        res.render('server', {
             task : task.toJSON()
         });
     }
@@ -31,5 +31,5 @@ const getTask = async (req,res) => {
 
 module.exports = {
     getHome, 
-    getProduct
+    getTask
 }

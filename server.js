@@ -6,6 +6,9 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 
 const app = express();
+
+app.use('', require('./routes/tasks'));
+
 // We can can get json data from the client
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -38,24 +41,24 @@ app.set("view engine", "handlebars");
 // static files
 app.use(express.static("public"));
 
-// Home
-app.get("/", (req, res) => {
-  res.render("index", {
-    title: "Homepage",
-  });
-});
-// About
-app.get("/about", (req, res) => {
-  res.render("about", {
-    title: "List of PERKELE",
-  });
-});
-// This
-app.get("/this", (req, res) => {
-  res.render("this", {
-    title: "this is just this",
-  });
-});
+// // Home
+// app.get("/", (req, res) => {
+//   res.render("index", {
+//     title: "Homepage",
+//   });
+// });
+// // About
+// app.get("/about", (req, res) => {
+//   res.render("about", {
+//     title: "List of PERKELE",
+//   });
+// });
+// // This
+// app.get("/this", (req, res) => {
+//   res.render("this", {
+//     title: "this is just this",
+//   });
+// });
 
 
 // Start the server
