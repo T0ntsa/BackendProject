@@ -14,6 +14,9 @@
     <li><strong>Created At:</strong> {{task.createdAt}}</li>
     <li><strong>Updated At:</strong> {{task.updatedAt}}</li>
 </ul>
+<h1>{{task.title}}</h1>
 
+<p>Assigned to: {{task.assignedTo.fullName}}</p>
+<p>Created by: {{task.createdBy.fullName}}</p>
 <h2>Raw JSON</h2>
 <pre>{{json task}}</pre>

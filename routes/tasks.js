@@ -5,10 +5,10 @@ require('dotenv').config();
 
 const taskController = require('../controllers/taskController');
 
-const router = express.Router();
+const taskRouter = express.Router();
 
-router.get('/', taskController.getHome); 
+taskRouter.get('/', taskController.getHome); 
 
-router.get('/tasks/:id', taskController.getTask);
+taskRouter.get('/tasks/:id', taskController.getTask);
 
-module.exports = router;
+module.exports = taskRouter;
