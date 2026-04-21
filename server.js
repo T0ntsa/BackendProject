@@ -13,8 +13,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // import routes
-app.use('/', require('./routes/tasks'));
-app.use('/', require('./routes/auth'));
+app.use('', require('./routes/tasks'));
+app.use('/api/auth', require('./routes/auth'));
 
 // Connect to MongoDB
 const connectDB = async () => {
