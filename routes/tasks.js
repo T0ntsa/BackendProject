@@ -7,8 +7,8 @@ const taskController = require('../controllers/taskController');
 
 const taskRouter = express.Router();
 
-taskRouter.get('/', taskController.getHome); 
+taskRouter.get('/', taskController.getTasks); 
 
-taskRouter.get('/tasks/:id', taskController.getTask);
+taskRouter.get('/:id', taskController.getTaskById);
 
 module.exports = taskRouter;
