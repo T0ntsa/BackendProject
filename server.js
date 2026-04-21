@@ -8,11 +8,13 @@ require("dotenv").config();
 
 const app = express();
 
-app.use('', require('./routes/tasks'));
-
 // We can can get json data from the client
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// import routes
+app.use('', require('./routes/tasks'));
+app.use('/', require('./routes/auth'));
 
 // Connect to MongoDB
 const connectDB = async () => {
@@ -64,6 +66,9 @@ app.use(express.static("public"));
 //     title: "this is just this",
 //   });
 // });
+
+
+
 
 // Start the server
 const PORT = process.env.PORT || 5000;

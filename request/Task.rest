@@ -1,0 +1,5 @@
+## get all tasks
+GET  http://localhost:5000/tasks/69e6262dee122e37ee3682d1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTY2ZGMxNDI5YmRiM2VhNGJmNGJkOSIsImZ1bGxOYW1lIjoiYWRtaW4iLCJpYXQiOjE3NzY3MDkwNjQsImV4cCI6MTc3OTMwMTA2NH0.jwctY_p0kfaP7OjTiqAJoKkFxxRMMzgGBjUkNr-A4LQ
+
