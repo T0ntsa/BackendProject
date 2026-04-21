@@ -35,6 +35,7 @@ app.engine(
   "handlebars",
   exphbs.engine({
     defaultLayout: "main",
+    // "helpers" was from copilot.github to get task json shown in browser
     helpers: {
     json: (context) => JSON.stringify(context, null, 2)
   }

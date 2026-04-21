@@ -18,7 +18,7 @@ const getTask = async (req,res) => {
         console.log("Looking for id:", req.params.id);
 
         const id = req.params.id;
-        const task = await Task.findById(id);     
+        const task = await Task.findById(id).populate("assignedTo");     
         res.render('server', {
             task : task.toJSON()
         });
