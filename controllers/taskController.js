@@ -28,10 +28,7 @@ const getTaskById = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const task = await Task.findById(id)
-        .populate("assignedTo")
-        .populate("createdBy")
-        .lean();
+        const task = await Task.findById(id).lean();
 
         if (!task) return res.status(404).json({ msg: "task not found" });
 
