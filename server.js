@@ -50,6 +50,7 @@ app.use(express.static("public"));
 // api routes
 app.use('/api/tasks', require('./routes/tasks'));
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/dogs', require('./routes/dogs'))
 
 // view routes
 app.use("/", require("./routes/index"));
