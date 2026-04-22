@@ -43,6 +43,39 @@ const getTaskById = async (req, res) => {
     }
 };
 
+// POST /api/tasks/create
+const createTask = async (req, res) => {
+    try {
+        const { title, description, dog, assignedTo, createdBy, status, dueDate } = req.body;
+
+        if (!title || !dog || !assignedTo || !createdBy) {
+            return res.status(400).json({
+                message: 'Missing required fields: title, dog, assignedTo, createdBy',
+            });
+        }
+
+        const task = await Task.create({
+            title,      // is required
+            description,
+            dog,        // is required
+            assignedTo, // is required
+            createdBy,  // is required
+            status,     // ['pending', 'in_progress', 'completed', 'cancelled'] Default 'pending'
+            dueDate,    
+        });
+
+        return res.status(201).json({
+            message: 'Task created successfully',
+            task,
+        });
+    } 
+    catch (err) {
+        return res.status(400).json({
+            message: 'Failed to create task',
+            error: err.message,
+        });
+    }
+};
 
 // List one task FRONTEND
 // const getTask = async (req,res) => {
@@ -70,4 +103,5 @@ const getTaskById = async (req, res) => {
 module.exports = {
     getTasks, 
     getTaskById,
+    createTask,
 }
