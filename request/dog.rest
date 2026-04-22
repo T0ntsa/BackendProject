@@ -1,0 +1,39 @@
+
+
+### Post a new dog
+POST http://localhost:5000/api/dogs/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTk0NWI5YjBjZmUzNDk2NmI4ODMzNyIsImZ1bGxOYW1lIjoiYWRtaW4iLCJpYXQiOjE3NzY4OTk0NTEsImV4cCI6MTc3OTQ5MTQ1MX0.fjxsXkHWQY8D7BxiZs7_xld9BqlepubFW4GiRsWv8oo
+
+{
+  "name": "Amy",
+  "breed": "Golden Retriever",
+  "age": 3,
+  "owner": "admin_user_id"
+}
+
+
+### put a dog by admin
+PUT http://localhost:5000/api/dogs/69e95974ef30407e9bcbe4b9
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTk0NWI5YjBjZmUzNDk2NmI4ODMzNyIsImZ1bGxOYW1lIjoiYWRtaW4iLCJpYXQiOjE3NzY4OTk0NTEsImV4cCI6MTc3OTQ5MTQ1MX0.fjxsXkHWQY8D7BxiZs7_xld9BqlepubFW4GiRsWv8oo
+
+{
+  "name": "Amy",
+  "breed": "Golden Retriever",
+  "age": 4,
+  "owner": "aaa"
+}
+
+
+### put a dog by trainer
+PUT http://localhost:5000/api/dogs/69e95974ef30407e9bcbe4b9
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTk1YWExMTBkNzI2M2JmMmQ5MGU4ZSIsImZ1bGxOYW1lIjoiZW1wbG95ZWUxIiwiaWF0IjoxNzc2OTAwNzczLCJleHAiOjE3Nzk0OTI3NzN9.nb7FAAP3r52Cz_-mT2ZlRNCTPOXUKsGsWbtNbE_GnK0
+
+{
+  "name": "Amy",
+  "breed": "Golden Retriever",
+  "age": 4,
+  "owner": "aaa"
+}
