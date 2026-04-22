@@ -1,4 +1,4 @@
-body {
+/* body {
     font-family: Arial, sans-serif;
     margin: 20px;
     background-color: #f0f0f0;
@@ -16,9 +16,107 @@ body {
     text-decoration-style: dashed;
     padding: 8px 12px;
     border-radius: 8px;
-}
-.nav a:hover {
+} */
+
+/* .nav a:hover {
   background-color: rgb(147, 179, 255); /* highlight */
-  color: #0b1b3a;                       /* readable text on highlight */
-  text-decoration-color: #0b1b3a;       /* underline changes too */
+  /* color: #0b1b3a;                       readable text on highlight */
+  /* text-decoration-color: #0b1b3a;       underline changes too */
+/* } */ 
+
+
+
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f7f7f7;
+  color: #222;
+}
+
+.nav {
+  background: #fff;
+  border-bottom: 1px solid #ddd;
+  padding: 12px 20px;
+}
+
+.nav ul {
+  list-style: none;
+  display: flex;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+}
+
+.nav a {
+  color: #222;
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+
+.nav a:hover {
+  background: #f1f1f1;
+}
+
+.auth-page,
+.home-page {
+  max-width: 420px;
+  margin: 48px auto;
+  padding: 0 16px;
+}
+
+.auth-card,
+.home-page {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.auth-form input,
+.auth-form button,
+#logout-btn {
+  padding: 10px 12px;
+  font: inherit;
+}
+
+.auth-form button,
+#logout-btn {
+  cursor: pointer;
+}
+
+.auth-hint,
+.auth-demo {
+  color: #666;
+  font-size: 14px;
+}
+
+code {
+  background: #f1f1f1;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.auth-message {
+  margin-top: 14px;
+  padding: 10px 12px;
+  border-radius: 6px;
+}
+
+.auth-message.error {
+  background: #ffe7e7;
+  color: #b00020;
+}
+
+.auth-message.success {
+  background: #e8f7ea;
+  color: #166534;
 }

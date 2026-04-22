@@ -1,1 +1,29 @@
-<h1>Welcome H1 title</h1>
+<section class="home-page">
+  <h1>Index Page</h1>
+
+  <div id="login-status">
+    <p>Not login </p>
+    <a href="/login">login</a>
+  </div>
+</section>
+
+<script>
+  const statusContainer = document.getElementById("login-status");
+  const storedUser = sessionStorage.getItem("authUser");
+
+  if (storedUser) {
+    const user = JSON.parse(storedUser);
+    statusContainer.innerHTML = `
+      <p>Welcome: ${user.fullName || user.email}</p>
+      <p>Email: ${user.email}</p>
+      <p>Role: ${user.role}</p>
+      <button id="logout-btn" type="button">Log out</button>
+    `;
+
+    document.getElementById("logout-btn").addEventListener("click", () => {
+      sessionStorage.removeItem("authToken");
+      sessionStorage.removeItem("authUser");
+      window.location.href = "/login";
+    });
+  }
+</script>

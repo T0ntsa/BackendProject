@@ -12,9 +12,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// import routes
-app.use('/api/tasks', require('./routes/tasks'));
-app.use('/api/auth', require('./routes/auth'));
+
 
 // Connect to MongoDB
 const connectDB = async () => {
@@ -33,6 +31,7 @@ const connectDB = async () => {
 };
 connectDB();
  
+app.set('views', path.join(__dirname, 'views'));
 app.engine(
   "handlebars",
   exphbs.engine({
@@ -47,6 +46,14 @@ app.engine(
 app.set("view engine", "handlebars");
 // static files
 app.use(express.static("public"));
+
+// api routes
+app.use('/api/tasks', require('./routes/tasks'));
+app.use('/api/auth', require('./routes/auth'));
+
+// view routes
+app.use("/", require("./routes/index"));
+
 
 // // Home
 // app.get("/", (req, res) => {
