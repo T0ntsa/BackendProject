@@ -77,6 +77,66 @@ const createTask = async (req, res) => {
     }
 };
 
+// UPDATE /api/tasks/:id
+const updateTask = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // // If user is not admin -> 403
+        // if (!request.user || request.user.role !== "admin") {
+        //     return response.status(403).json({ error: "Access denied. Admins only." });
+        // }
+
+        // // Check for token in Authorization header
+        // const authHeader = req.headers.authorization;
+        // if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        //     return res.status(401).json({ message: 'Missing token' });
+        // }
+        // const token = authHeader.split(' ')[1];
+        // try {
+        //     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        //     req.user = decoded; // token is valid
+        // } 
+        // catch (err) {
+        //     return res.status(401).json({ message: 'Invalid or expired token' });
+        // }
+
+        const updates = req.body;
+
+        const updatedTask = await Task.findByIdAndUpdate(id, updates, {
+            returnDocument: 'after',
+            runValidators: true,
+        });
+
+        if (!updatedTask) {
+            return res.status(404).json({ message: 'Task not found' });
+        }
+
+        return res.status(200).json(updatedTask);
+    }
+    catch (err) {
+        return res.status(400).json({ message: 'Failed to update task', error: err.message });
+    }
+};
+
+// DELETE /api/tasks/:id
+const deleteTask = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const deletedTask = await Task.findByIdAndDelete(id);
+
+        if (!deletedTask) {
+            return res.status(404).json({ message: 'Task not found' });
+        }
+
+        return res.status(200).json({ message: 'Task deleted successfully', task: deletedTask });
+    } 
+    catch (err) {
+        return res.status(400).json({ message: 'Failed to delete task', error: err.message });
+    }
+};
+
 // List one task FRONTEND
 // const getTask = async (req,res) => {
 //     try {
@@ -104,4 +164,6 @@ module.exports = {
     getTasks, 
     getTaskById,
     createTask,
+    updateTask,
+    deleteTask,
 }

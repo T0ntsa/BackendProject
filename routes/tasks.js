@@ -11,6 +11,10 @@ taskRouter.get('/', taskController.getTasks);
 taskRouter.get('/:id', taskController.getTaskById);
 // Create a task
 taskRouter.post('/create', taskController.createTask);
+// Update a task
+taskRouter.patch('/:id', taskController.updateTask);
+// Delete task
+taskRouter.delete('/:id', taskController.deleteTask);
 
 
 module.exports = taskRouter;
