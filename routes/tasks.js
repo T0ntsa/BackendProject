@@ -4,6 +4,10 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 const taskController = require('../controllers/taskController');
 const taskRouter = express.Router();
+const { protect } = require("../routes/auth.middleware");
+
+taskRouter.use(protect); // Apply protect middleware to all routes
+
 
 // Get all tasks
 taskRouter.get('/', taskController.getTasks); 
