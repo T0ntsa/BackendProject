@@ -128,6 +128,11 @@ const deleteTask = async (req, res) => {
         console.log("Request body:", req.body); // Log request body
         console.log("Request user:", req.user); // Log user details
 
+        // Check if the user is an admin
+        if (!req.user || req.user.role !== "admin") {
+            return res.status(403).json({ error: "Access denied. Admins only." });
+        }
+        
         const { id } = req.params;
 
         const deletedTask = await Task.findByIdAndDelete(id);
