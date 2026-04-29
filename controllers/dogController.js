@@ -15,7 +15,7 @@ exports.postDog = async (request, response) => {
     return response.status(400).json({ error: "Request body is required" });
   }
 
-  const { name, breed, age, owner } = request.body;
+  const { name, breed, age, owner, photo, notes, addedBy } = request.body;
 
   if (!name) {
     return response.status(400).json({ error: "Dog name is required" });
@@ -23,7 +23,7 @@ exports.postDog = async (request, response) => {
   if (!breed) {
     return response.status(400).json({ error: "Dog breed is required" });
   }
-  if (age === undefined || age === null) {
+  if (!age || age === undefined || age === null) {
     return response.status(400).json({ error: "Dog age is required" });
   }
   if (typeof age !== "number" || age < 0) {
@@ -37,7 +37,10 @@ exports.postDog = async (request, response) => {
       name,
       breed,
       age,
-      owner: owner || request.user.id, // Default to the current admin user
+      owner: owner,
+      photo,
+      notes,
+      addedBy: addedBy || request.user.id, // Default to the current admin user
     });
 
     const savedDog = await newDog.save();
@@ -61,12 +64,12 @@ exports.putDog = async (request, response) => {
   }
 
   const { id } = request.params;
-  const { name, breed, age, owner } = request.body;
+  const { name, breed, age, owner, photo, notes, addedBy } = request.body;
 
   try {
     const updatedDog = await Dog.findByIdAndUpdate(
       id,
-      { name, breed, age, owner },
+      { name, breed, age, owner, photo, notes, addedBy },
       { new: true, runValidators: true },
     );
 
