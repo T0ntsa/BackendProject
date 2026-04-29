@@ -12,13 +12,11 @@ const protect = async (req, res, next) => {
             // Extract the token from "Bearer <token>"
             token = req.headers.authorization.split(' ')[1];
 
-            // Verify the token using your JWT_SECRET
+            // Verify the token using your JWT_TOKEN
             const decoded = jwt.verify(token, process.env.JWT_TOKEN);
-
             // Find the user by the ID from the token's payload
             // Attach the user to the request object, excluding the password
             req.user = await User.findById(decoded.id).select('-password');
-            
             if (!req.user) {
                 return res.status(401).json({ success: false, error: 'User not found' });
             }

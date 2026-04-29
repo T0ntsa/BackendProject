@@ -14,6 +14,9 @@ const Task = require('../models/Task');
 // GET /api/tasks
 const getTasks = async (req, res) => {
     try {
+        console.log("Request body:", req.body); // Log request body
+        console.log("Request user:", req.user); // Log user details
+
         const tasks = await Task.find({}); // returns plain JSON objects
 
         return res.json(tasks);
@@ -26,6 +29,9 @@ const getTasks = async (req, res) => {
 // GET /api/tasks/:id
 const getTaskById = async (req, res) => {
     try {
+        console.log("Request body:", req.body); // Log request body
+        console.log("Request user:", req.user); // Log user details
+
         const { id } = req.params;
 
         const task = await Task.findById(id).lean();
@@ -46,6 +52,14 @@ const getTaskById = async (req, res) => {
 // POST /api/tasks/create
 const createTask = async (req, res) => {
     try {
+        console.log("Request body:", req.body); // Log request body
+        console.log("Request user:", req.user); // Log user details
+
+        // Check if the user is an admin
+        if (!req.user || req.user.role !== "admin") {
+            return res.status(403).json({ error: "Access denied. Admins only." });
+        }
+
         const { title, description, dog, assignedTo, createdBy, status, dueDate } = req.body;
 
         if (!title || !dog || !assignedTo || !createdBy) {
@@ -77,6 +91,63 @@ const createTask = async (req, res) => {
     }
 };
 
+// UPDATE /api/tasks/:id
+const updateTask = async (req, res) => {
+    try {
+        console.log("Request body:", req.body); // Log request body
+        console.log("Request user:", req.user); // Log user details
+
+        // Check if the user is an admin
+        if (!req.user || req.user.role !== "admin") {
+            return res.status(403).json({ error: "Access denied. Admins only." });
+        }
+
+        const { id } = req.params;
+
+        const updates = req.body;
+        // https://mongoosejs.com/docs/api/model.html#Model.findByIdAndUpdate()
+        const updatedTask = await Task.findByIdAndUpdate(id, updates, {
+            returnDocument: 'after',
+            runValidators: true,
+        });
+
+        if (!updatedTask) {
+            return res.status(404).json({ message: 'Task not found' });
+        }
+
+        return res.status(200).json(updatedTask);
+    }
+    catch (err) {
+        return res.status(400).json({ message: 'Failed to update task', error: err.message });
+    }
+};
+
+// DELETE /api/tasks/:id
+const deleteTask = async (req, res) => {
+    try {
+        console.log("Request body:", req.body); // Log request body
+        console.log("Request user:", req.user); // Log user details
+
+        // Check if the user is an admin
+        if (!req.user || req.user.role !== "admin") {
+            return res.status(403).json({ error: "Access denied. Admins only." });
+        }
+        
+        const { id } = req.params;
+
+        const deletedTask = await Task.findByIdAndDelete(id);
+
+        if (!deletedTask) {
+            return res.status(404).json({ message: 'Task not found' });
+        }
+
+        return res.status(200).json({ message: 'Task deleted successfully', task: deletedTask });
+    } 
+    catch (err) {
+        return res.status(400).json({ message: 'Failed to delete task', error: err.message });
+    }
+};
+
 // List one task FRONTEND
 // const getTask = async (req,res) => {
 //     try {
@@ -104,4 +175,6 @@ module.exports = {
     getTasks, 
     getTaskById,
     createTask,
+    updateTask,
+    deleteTask,
 }

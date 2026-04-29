@@ -4,13 +4,32 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 const taskController = require('../controllers/taskController');
 const taskRouter = express.Router();
+const { protect } = require("../routes/auth.middleware");
+
+taskRouter.use(protect); // Apply protect middleware to all routes
+
+// DEBUGGING 
+taskRouter.use((req, res, next) => {
+    console.log(`[TASKS] ${req.method} ${req.originalUrl}`);
+    console.log("Authorization header:", req.headers.authorization);
+    console.log("req.user:", req.user);
+    next();
+});
 
 // Get all tasks
 taskRouter.get('/', taskController.getTasks); 
+
 // Get task by id
 taskRouter.get('/:id', taskController.getTaskById);
+
 // Create a task
 taskRouter.post('/create', taskController.createTask);
+
+// Update a task
+taskRouter.patch('/:id', taskController.updateTask);
+
+// Delete task
+taskRouter.delete('/:id', taskController.deleteTask);
 
 
 module.exports = taskRouter;
