@@ -1,79 +1,29 @@
-<section class="auth-page">
-  <div class="auth-card">
-    <h1>Login</h1>
-    <p class="auth-hint"> POST /api/auth/login</p>
+<main class="auth-shell">
+  <section class="auth-panel">
+    <div class="brand-mark">Pet Training</div>
+    <h1>Welcome back</h1>
+    <p class="text-muted mb-4">Sign in to manage training tasks, trainers, and dog profiles.</p>
 
-    <form id="login-form" class="auth-form">
-      <label for="email">Email</label>
-      <input
-        id="email"
-        name="email"
-        type="email"
-        placeholder="admin@abc.com"
-        required
-      />
+    <div id="auth-message" class="alert d-none" role="alert"></div>
 
-      <label for="password">Password</label>
-      <input
-        id="password"
-        name="password"
-        type="password"
-        placeholder="password"
-        required
-      />
+    <form id="login-form" class="needs-validation" novalidate>
+      <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input id="email" name="email" type="email" class="form-control" placeholder="admin@abc.com" required>
+        <div class="invalid-feedback">Please enter a valid email address.</div>
+      </div>
 
-      <button type="submit">Login</button>
+      <div class="mb-4">
+        <label for="password" class="form-label">Password</label>
+        <input id="password" name="password" type="password" class="form-control" minlength="6" required>
+        <div class="invalid-feedback">Password must be at least 6 characters.</div>
+      </div>
+
+      <button type="submit" class="btn btn-success w-100">Sign in</button>
     </form>
 
-    <p id="login-message" class="auth-message" hidden></p>
+    <p class="auth-switch">No account yet? <a href="/register">Create one</a></p>
+  </section>
+</main>
 
-    <div class="auth-demo">
-      {{!-- <p><code>employee1@abc.com</code> / <code>password</code></p> --}}
-    </div>
-  </div>
-</section>
-
-<script>
-  const form = document.getElementById("login-form");
-  const message = document.getElementById("login-message");
-
-  const showMessage = (text, isError = true) => {
-    message.hidden = false;
-    message.textContent = text;
-    message.className = isError ? "auth-message error" : "auth-message success";
-  };
-
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    message.hidden = true;
-
-    const formData = new FormData(form);
-    const payload = {
-      email: formData.get("email"),
-      password: formData.get("password"),
-    };
-
-    try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        showMessage(data.error || "Login failed");
-        return;
-      }
-
-      sessionStorage.setItem("authToken", data.token);
-      sessionStorage.setItem("authUser", JSON.stringify(data.user));
-      window.location.href = "/";
-    } catch (error) {
-      showMessage("Request failed, please try again.");
-    }
-  });
-</script>
+<script src="/auth.js"></script>

@@ -1,0 +1,44 @@
+<main class="auth-shell">
+  <section class="auth-panel">
+    <div class="brand-mark">Pet Training</div>
+    <h1>Create account</h1>
+    <p class="text-muted mb-4">Trainer accounts will appear in the task assignment list.</p>
+
+    <div id="auth-message" class="alert d-none" role="alert"></div>
+
+    <form id="register-form" class="needs-validation" novalidate>
+      <div class="mb-3">
+        <label for="fullName" class="form-label">Full name</label>
+        <input id="fullName" name="fullName" type="text" class="form-control" minlength="2" required>
+        <div class="invalid-feedback">Please enter at least 2 characters.</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input id="email" name="email" type="email" class="form-control" required>
+        <div class="invalid-feedback">Please enter a valid email address.</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input id="password" name="password" type="password" class="form-control" minlength="6" required>
+        <div class="invalid-feedback">Password must be at least 6 characters.</div>
+      </div>
+
+      <div class="mb-4">
+        <label for="role" class="form-label">Role</label>
+        <select id="role" name="role" class="form-select" required>
+          <option value="employee" selected>Trainer</option>
+          <option value="admin">Administrator</option>
+        </select>
+        <div class="invalid-feedback">Please choose a role.</div>
+      </div>
+
+      <button type="submit" class="btn btn-success w-100">Create account</button>
+    </form>
+
+    <p class="auth-switch">Already have an account? <a href="/login">Back to sign in</a></p>
+  </section>
+</main>
+
+<script src="/auth.js"></script>
