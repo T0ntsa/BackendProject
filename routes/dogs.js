@@ -6,9 +6,10 @@ const dogRouter = express.Router();
 
 dogRouter.use(protect); // Apply protect middleware to all routes
 
+dogRouter.get("/", dogController.getDogs);
 dogRouter.post("/", dogController.postDog);
 dogRouter.put("/:id", dogController.putDog);
-// dogRouter.delete("/:id", dogController.deleteDog);
+dogRouter.delete("/:id", dogController.deleteDog);
 // dogRouter.get("/", dogController.getAllDogs);
 
 module.exports = dogRouter;

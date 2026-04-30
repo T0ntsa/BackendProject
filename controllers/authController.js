@@ -65,10 +65,14 @@ exports.login = async (req, res) => {
         // Check if user exists
         const user = await User.findOne({ email: email.toLowerCase() }).select('+password'); // Include password 
 
+        if (!user) {
+            return res.status(401).json({ success: false, error: 'Invalid credentials' });
+        }
+
         // Check password
         const isMatch = await user.matchPassword(password);
 
-        if (!user || !isMatch) {
+        if (!isMatch) {
             return res.status(401).json({ success: false, error: 'Invalid credentials' }); 
         }
        
@@ -79,3 +83,22 @@ exports.login = async (req, res) => {
     }
 };
 
+// GET /api/auth/trainers
+exports.getTrainers = async (_req, res) => {
+    try {
+        const trainers = await User.find({ role: 'employee' })
+            .select('fullName email role')
+            .sort({ fullName: 1 })
+            .lean();
+
+        res.json(trainers.map((trainer) => ({
+            id: trainer._id.toString(),
+            email: trainer.email,
+            fullName: trainer.fullName,
+            role: trainer.role,
+        })));
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, error: 'Server error' });
+    }
+};
