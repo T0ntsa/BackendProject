@@ -55,29 +55,6 @@ app.use('/api/dogs', require('./routes/dogs'))
 // view routes
 app.use("/", require("./routes/index"));
 
-
-// // Home
-// app.get("/", (req, res) => {
-//   res.render("index", {
-//     title: "Homepage",
-//   });
-// });
-// // About
-// app.get("/about", (req, res) => {
-//   res.render("about", {
-//     title: "List of PERKELE",
-//   });
-// });
-// // This
-// app.get("/this", (req, res) => {
-//   res.render("this", {
-//     title: "this is just this",
-//   });
-// });
-
-
-
-
 // Start the server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

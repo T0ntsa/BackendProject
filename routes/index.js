@@ -8,6 +8,7 @@ router.get("/", (req, res) => {
   });
 });
 
+// Login
 router.get("/login", (req, res) => {
   res.render("login", {
     title: "Login",
@@ -20,6 +21,11 @@ router.get("/register", (req, res) => {
     title: "Register",
     isAuthPage: true,
   });
+});
+
+// Tasks
+router.get("/tasks", (req, res) => {
+  res.render("tasks", { title: "Tasks" });
 });
 
 module.exports = router;
