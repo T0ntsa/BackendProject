@@ -7,7 +7,7 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --check server.js && node --check controllers/authController.js && node --check controllers/dogController.js && node --check controllers/taskController.js && node --check routes/auth.js && node --check routes/dogs.js && node --check routes/tasks.js && node --check public/auth.js && node --check public/app.js && node --test tests/*.test.js",
     "dev": "nodemon server.js"
   },
   "devDependencies": {
