@@ -11,7 +11,8 @@ const dogSchema = new mongoose.Schema({
     trim: true 
   },
   age: { 
-    type: Number 
+    type: Number,
+    required: true
   },
   owner: { 
     type: String,  
