@@ -1,0 +1,321 @@
+<section class="tasks-page">
+<h1 id="pageTitle">Tasks</h1>
+
+<div id="login-status">
+<p>Not login</p>
+<a href="/login">login</a>
+</div>
+
+<div id="tasksApp" style="display:none;">
+<div style="margin: 12px 0;">
+    <button id="reloadBtn" type="button">Reload</button>
+</div>
+
+<!-- Admin-only: create / edit -->
+<div id="adminPanel" style="display:none; border: 1px solid #ddd; padding: 12px; margin: 12px 0;">
+    <h2>Admin: Create / Edit task</h2>
+
+    <form id="taskForm">
+    <input type="hidden" id="taskId" />
+
+    <div>
+        <label>Title *</label><br />
+        <input id="title" type="text" required style="width: 360px;" />
+    </div>
+
+    <div style="margin-top:8px;">
+        <label>Description</label><br />
+        <textarea id="description" rows="3" style="width: 360px;"></textarea>
+    </div>
+
+    <div style="margin-top:8px;">
+        <label>Dog (ObjectId) *</label><br />
+        <input id="dog" type="text" required style="width: 360px;" />
+    </div>
+
+    <div style="margin-top:8px;">
+        <label>AssignedTo (User ObjectId) *</label><br />
+        <input id="assignedTo" type="text" required style="width: 360px;" />
+    </div>
+
+    <div style="margin-top:8px;">
+        <label>CreatedBy (User ObjectId) *</label><br />
+        <input id="createdBy" type="text" required style="width: 360px;" />
+    </div>
+
+    <div style="margin-top:8px;">
+        <label>Status</label><br />
+        <select id="status">
+        <option value="pending">pending</option>
+        <option value="in_progress" selected>in_progress</option>
+        <option value="completed">completed</option>
+        <option value="cancelled">cancelled</option>
+        </select>
+    </div>
+
+    <div style="margin-top:8px;">
+        <label>Priority</label><br />
+        <select id="priority">
+        <option value="low">low</option>
+        <option value="medium" selected>medium</option>
+        <option value="high">high</option>
+        </select>
+    </div>
+
+    <div style="margin-top:8px;">
+        <label>Due date (YYYY-MM-DD)</label><br />
+        <input id="dueDate" type="date" />
+    </div>
+
+    <div style="margin-top:12px;">
+        <button id="saveBtn" type="submit">Save (Create)</button>
+        <button id="cancelEditBtn" type="button" style="display:none;">Cancel edit</button>
+    </div>
+
+    <div id="formMsg" style="margin-top:10px;"></div>
+    </form>
+</div>
+
+<h2>All tasks</h2>
+<div id="tasks"></div>
+</div>
+</section>
+
+<script>
+    const statusContainer = document.getElementById("login-status");
+    const pageTitleEl = document.getElementById("pageTitle");
+    const tasksAppEl = document.getElementById("tasksApp");
+    const tasksEl = document.getElementById("tasks");
+    const reloadBtn = document.getElementById("reloadBtn");
+
+    const adminPanelEl = document.getElementById("adminPanel");
+    const taskForm = document.getElementById("taskForm");
+    const formMsgEl = document.getElementById("formMsg");
+    const cancelEditBtn = document.getElementById("cancelEditBtn");
+    const saveBtn = document.getElementById("saveBtn");
+
+    const taskIdEl = document.getElementById("taskId");
+    const titleEl = document.getElementById("title");
+    const descriptionEl = document.getElementById("description");
+    const dogEl = document.getElementById("dog");
+    const assignedToEl = document.getElementById("assignedTo");
+    const createdByEl = document.getElementById("createdBy");
+    const statusEl = document.getElementById("status");
+    const priorityEl = document.getElementById("priority");
+    const dueDateEl = document.getElementById("dueDate");
+
+    const storedUser = sessionStorage.getItem("authUser");
+    const token = sessionStorage.getItem("authToken");
+
+    function escapeHtml(str) {
+        return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function setMsg(el, message, type) {
+        el.innerHTML = message ? `<p style="color:${type === "error" ? "red" : "green"};">${escapeHtml(message)}</p>` : "";
+    }
+
+    function fmtDueDateForInput(value) {
+        if (!value) return "";
+        const d = new Date(value);
+        if (isNaN(d.getTime())) return "";
+        // yyyy-mm-dd for <input type="date">
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, "0");
+        const dd = String(d.getDate()).padStart(2, "0");
+        return `${yyyy}-${mm}-${dd}`;
+    }
+
+    function resetFormToCreate() {
+        taskIdEl.value = "";
+        taskForm.reset();
+        dueDateEl.value = "";
+        saveBtn.textContent = "Save (Create)";
+        cancelEditBtn.style.display = "none";
+        setMsg(formMsgEl, "", "ok");
+    }
+
+    function fillFormForEdit(task) {
+        taskIdEl.value = task._id || "";
+        titleEl.value = task.title || "";
+        descriptionEl.value = task.description || "";
+        dogEl.value = task.dog || "";
+        assignedToEl.value = task.assignedTo || "";
+        createdByEl.value = task.createdBy || "";
+        statusEl.value = task.status || "pending";
+        priorityEl.value = task.priority || "medium";
+        dueDateEl.value = fmtDueDateForInput(task.dueDate);
+
+        saveBtn.textContent = "Save (Update)";
+        cancelEditBtn.style.display = "inline-block";
+        setMsg(formMsgEl, "", "ok");
+    }
+
+    async function apiFetch(url, options = {}) {
+        const res = await fetch(url, {
+        ...options,
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Accept": "application/json",
+            ...(options.body ? { "Content-Type": "application/json" } : {}),
+            ...(options.headers || {})
+        }
+        });
+
+        const data = await res.json().catch(() => null);
+        if (!res.ok) {
+        const msg = (data && (data.error || data.msg || data.message)) || `Request failed (${res.status})`;
+        throw new Error(msg);
+        }
+        return data;
+    }
+
+    function renderTasks(tasks, isAdmin) {
+        if (!Array.isArray(tasks) || tasks.length === 0) {
+        tasksEl.innerHTML = "<p>No tasks found.</p>";
+        return;
+        }
+
+        tasksEl.innerHTML = `
+        <ul>
+            ${tasks.map(t => `
+            <li style="margin: 8px 0;">
+                <strong>${escapeHtml(t.title || "(no title)")}</strong>
+                — <em>${escapeHtml(t.status || "")}</em>
+                ${t.priority ? ` — priority: ${escapeHtml(t.priority)}` : ""}
+                ${t.dueDate ? ` — due: ${new Date(t.dueDate).toLocaleDateString()}` : ""}
+                ${isAdmin ? ` — <button type="button" class="editBtn" data-task-id="${escapeHtml(t._id)}">Edit</button>` : ""}
+            </li>
+            `).join("")}
+        </ul>
+        `;
+
+        if (isAdmin) {
+        document.querySelectorAll(".editBtn").forEach(btn => {
+            btn.addEventListener("click", async (e) => {
+            const id = e.currentTarget.getAttribute("data-task-id");
+            try {
+                const task = await apiFetch(`/api/tasks/${id}`);
+                fillFormForEdit(task);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            } catch (err) {
+                alert(err.message);
+            }
+            });
+        });
+        }
+    }
+
+    async function loadTasks(isAdmin) {
+        tasksEl.innerHTML = "<p>Loading...</p>";
+        const tasks = await apiFetch("/api/tasks");
+        renderTasks(tasks, isAdmin);
+    }
+
+    async function init() {
+        if (!storedUser || !token) return;
+
+        const user = JSON.parse(storedUser);
+
+        // Title: "Tasks - email as role"
+        pageTitleEl.textContent = `Tasks - ${user.email || "unknown"} as ${user.role || "unknown"}`;
+
+        // Minimal login status + logout (no extra user fields)
+        statusContainer.innerHTML = `
+        <p>Logged in</p>
+        <button id="logout-btn" type="button">Log out</button>
+        `;
+        document.getElementById("logout-btn").addEventListener("click", () => {
+        sessionStorage.removeItem("authToken");
+        sessionStorage.removeItem("authUser");
+        window.location.href = "/login";
+        });
+
+        // Role gate for viewing tasks
+        const canView = (user.role === "admin" || user.role === "employee");
+        if (!canView) {
+        tasksAppEl.style.display = "block";
+        tasksEl.innerHTML = "<p>Access denied: only employee/admin can view tasks.</p>";
+        return;
+        }
+
+        const isAdmin = (user.role === "admin");
+        tasksAppEl.style.display = "block";
+
+        // Admin-only panel
+        if (isAdmin) {
+        adminPanelEl.style.display = "block";
+        }
+
+        await loadTasks(isAdmin);
+
+        reloadBtn.addEventListener("click", () => {
+        loadTasks(isAdmin).catch(err => {
+            tasksEl.innerHTML = `<p style="color:red;">${escapeHtml(err.message)}</p>`;
+        });
+        });
+
+        cancelEditBtn.addEventListener("click", () => resetFormToCreate());
+
+        taskForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        setMsg(formMsgEl, "", "ok");
+
+        if (!isAdmin) {
+            setMsg(formMsgEl, "Admins only.", "error");
+            return;
+        }
+
+        const payload = {
+            title: titleEl.value.trim(),
+            description: descriptionEl.value.trim(),
+            dog: dogEl.value.trim(),
+            assignedTo: assignedToEl.value.trim(),
+            createdBy: createdByEl.value.trim(),
+            status: statusEl.value,
+            priority: priorityEl.value,
+        };
+
+        // only send dueDate if set; it must be ISO-ish / date-parsable
+        if (dueDateEl.value) {
+            payload.dueDate = dueDateEl.value; // "YYYY-MM-DD" (works with Mongoose Date)
+        }
+
+        try {
+            const id = taskIdEl.value.trim();
+
+            if (!id) {
+            // CREATE (your API is POST /api/tasks/create)
+            await apiFetch("/api/tasks/create", {
+                method: "POST",
+                body: JSON.stringify(payload),
+            });
+            setMsg(formMsgEl, "Task created.", "ok");
+            resetFormToCreate();
+            } else {
+            // UPDATE (your API is PATCH /api/tasks/:id)
+            await apiFetch(`/api/tasks/${id}`, {
+                method: "PATCH",
+                body: JSON.stringify(payload),
+            });
+            setMsg(formMsgEl, "Task updated.", "ok");
+            resetFormToCreate();
+            }
+
+            await loadTasks(true);
+        } catch (err) {
+            setMsg(formMsgEl, err.message, "error");
+        }
+        });
+    }
+
+    init().catch(err => {
+        tasksAppEl.style.display = "block";
+        tasksEl.innerHTML = `<p style="color:red;">${escapeHtml(err.message)}</p>`;
+    });
+</script>

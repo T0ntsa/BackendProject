@@ -231,9 +231,6 @@ const deleteTask = async (req, res) => {
 //     } 
 // }
 
-
-// List all products
-
 module.exports = {
     getTasks, 
     getTaskById,
