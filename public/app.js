@@ -219,7 +219,7 @@
 
         return `
         <article class="dog-card">
-          <div class="dog-photo" ${photoStyle}></div>
+          <div class="dog-photo" aria-hidden="true" ${photoStyle}></div>
           <div class="dog-card-body">
             <div class="dog-card-header">
               <div class="dog-card-title">
