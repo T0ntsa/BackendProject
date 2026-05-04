@@ -1,29 +1,260 @@
-<section class="home-page">
-  <h1>Index Page</h1>
+<div class="app-shell">
+  <aside class="sidebar">
+    <a class="sidebar-brand" href="/" aria-label="Pet Training home">
+      <span class="brand-dot"></span>
+      <span>Pet Training</span>
+    </a>
 
-  <div id="login-status">
-    <p>Not login </p>
-    <a href="/login">login</a>
-  </div>
-</section>
+    <nav class="side-nav" aria-label="Main navigation">
+      <button class="side-link active" type="button" data-section="overview">Overview</button>
+      <button class="side-link" type="button" data-section="tasks">Tasks</button>
+      <button class="side-link" type="button" data-section="dogs">Dogs</button>
+    </nav>
 
-<script>
-  const statusContainer = document.getElementById("login-status");
-  const storedUser = sessionStorage.getItem("authUser");
+    <div class="sidebar-user">
+      <div class="small text-muted">Current user</div>
+      <strong id="current-user-name">-</strong>
+      <div id="current-user-role" class="small"></div>
+      <button id="logout-btn" class="btn btn-outline-secondary btn-sm mt-3 w-100" type="button">Sign out</button>
+    </div>
+  </aside>
 
-  if (storedUser) {
-    const user = JSON.parse(storedUser);
-    statusContainer.innerHTML = `
-      <p>Welcome: ${user.fullName || user.email}</p>
-      <p>Email: ${user.email}</p>
-      <p>Role: ${user.role}</p>
-      <button id="logout-btn" type="button">Log out</button>
-    `;
+  <main class="main-content">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Training center</p>
+        <h1 id="page-title">Overview</h1>
+      </div>
+      <button id="refresh-btn" class="btn btn-success" type="button">Refresh</button>
+    </header>
 
-    document.getElementById("logout-btn").addEventListener("click", () => {
-      sessionStorage.removeItem("authToken");
-      sessionStorage.removeItem("authUser");
-      window.location.href = "/login";
-    });
-  }
-</script>
+    <div id="app-message" class="alert d-none" role="alert"></div>
+
+    <div id="delete-task-modal" class="confirm-backdrop d-none" role="dialog" aria-modal="true" aria-labelledby="delete-task-modal-title">
+      <div class="confirm-modal">
+        <h2 id="delete-task-modal-title">Delete task?</h2>
+        <p class="text-muted mb-2">This action cannot be undone.</p>
+        <div class="delete-target" id="delete-task-name"></div>
+        <div class="confirm-actions">
+          <button id="cancel-delete-task" class="btn btn-outline-secondary" type="button">Cancel</button>
+          <button id="confirm-delete-task" class="btn btn-danger" type="button">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="delete-dog-modal" class="confirm-backdrop d-none" role="dialog" aria-modal="true" aria-labelledby="delete-dog-modal-title">
+      <div class="confirm-modal">
+        <h2 id="delete-dog-modal-title">Delete dog profile?</h2>
+        <p class="text-muted mb-2">This action cannot be undone.</p>
+        <div class="delete-target" id="delete-dog-name"></div>
+        <div class="confirm-actions">
+          <button id="cancel-delete-dog" class="btn btn-outline-secondary" type="button">Cancel</button>
+          <button id="confirm-delete-dog" class="btn btn-danger" type="button">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <section id="overview-section" class="content-section">
+      <div class="welcome-band">
+        <div>
+          <p class="eyebrow">Daily dashboard</p>
+          <h2>Keep every training plan clear</h2>
+          <p>Review pending work, maintain dog profiles, and assign new training tasks to trainers.</p>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <article class="stat-card">
+          <span>Total tasks</span>
+          <strong id="task-count">0</strong>
+        </article>
+        <article class="stat-card">
+          <span>Pending</span>
+          <strong id="pending-count">0</strong>
+        </article>
+        <article class="stat-card">
+          <span>Dog profiles</span>
+          <strong id="dog-count">0</strong>
+        </article>
+        <article class="stat-card">
+          <span>Trainers</span>
+          <strong id="trainer-count">0</strong>
+        </article>
+      </div>
+    </section>
+
+    <section id="tasks-section" class="content-section d-none">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Tasks</p>
+          <h2>Browse and edit tasks</h2>
+        </div>
+      </div>
+
+      <div class="row g-4 align-items-start">
+        <div id="task-list-column" class="col-12">
+          <div class="panel">
+            <div class="panel-header">
+              <h3>Task list</h3>
+              <div class="task-panel-actions">
+                <span id="task-list-meta" class="text-muted small"></span>
+                <button id="new-task-btn" class="btn btn-success btn-sm" type="button" data-action="new-task">New task</button>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table align-middle">
+                <thead>
+                  <tr>
+                    <th>Task</th>
+                    <th>Dog</th>
+                    <th>Trainer</th>
+                    <th>Status</th>
+                    <th>Due</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="task-table-body"></tbody>
+              </table>
+            </div>
+            <div id="empty-tasks" class="empty-state d-none">No tasks yet. Add a training plan to get started.</div>
+          </div>
+        </div>
+
+        <div id="task-form-column" class="col-12 col-xl-5 d-none">
+          <div class="panel">
+            <div class="panel-header">
+              <h3 id="task-form-title">Add task</h3>
+              <div class="task-panel-actions">
+                <button id="reset-task-form" class="btn btn-outline-secondary btn-sm" type="button">Clear</button>
+                <button id="close-task-form" class="btn btn-outline-secondary btn-sm" type="button">Close</button>
+              </div>
+            </div>
+            <p id="task-permission-note" class="admin-note text-muted small">Admins can create tasks. Admins and assigned trainers can update assigned tasks.</p>
+            <form id="task-form" class="needs-validation" novalidate>
+              <input type="hidden" name="id">
+
+              <div class="mb-3">
+                <label class="form-label" for="task-title">Task title</label>
+                <input id="task-title" name="title" class="form-control" minlength="2" required>
+                <div class="invalid-feedback">Please enter a task title.</div>
+              </div>
+
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label" for="task-dog">Dog</label>
+                  <select id="task-dog" name="dog" class="form-select" required></select>
+                  <div class="invalid-feedback">Please choose a dog.</div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="task-assigned-to">Trainer</label>
+                  <select id="task-assigned-to" name="assignedTo" class="form-select" required></select>
+                  <div class="invalid-feedback">Please choose a trainer.</div>
+                </div>
+              </div>
+
+              <div class="row g-3 mt-1">
+                <div class="col-md-4">
+                  <label class="form-label" for="task-priority">Priority</label>
+                  <select id="task-priority" name="priority" class="form-select">
+                    <option value="low">Low</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="high">High</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label" for="task-status">Status</label>
+                  <select id="task-status" name="status" class="form-select">
+                    <option value="pending">Pending</option>
+                    <option value="in_progress">In progress</option>
+                    <option value="completed">Completed</option>
+                    <option value="cancelled">Cancelled</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label" for="task-due-date">Due date</label>
+                  <input id="task-due-date" name="dueDate" type="date" class="form-control">
+                </div>
+              </div>
+
+              <div class="mt-3">
+                <label class="form-label" for="task-description">Description</label>
+                <textarea id="task-description" name="description" class="form-control" rows="4"></textarea>
+              </div>
+
+              <button id="task-submit-btn" class="btn btn-success w-100 mt-4" type="submit">Save task</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="dogs-section" class="content-section d-none">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Dogs</p>
+          <h2>Dog profiles</h2>
+        </div>
+      </div>
+
+      <div class="row g-4 align-items-start">
+        <div class="col-12 col-xl-7">
+          <div class="dogs-grid" id="dogs-list"></div>
+          <div id="empty-dogs" class="empty-state d-none">No dog profiles yet. Add one to get started.</div>
+        </div>
+
+        <div class="col-12 col-xl-5">
+          <div class="panel">
+            <div class="panel-header">
+              <h3 id="dog-form-title">Add dog</h3>
+              <button id="reset-dog-form" class="btn btn-outline-secondary btn-sm" type="button">Clear</button>
+            </div>
+            <p class="admin-note text-muted small">Only administrators can create and update dog profiles.</p>
+            <form id="dog-form" class="needs-validation" novalidate>
+              <input type="hidden" name="id">
+
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label" for="dog-name">Name</label>
+                  <input id="dog-name" name="name" class="form-control" required>
+                  <div class="invalid-feedback">Please enter the dog's name.</div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="dog-breed">Breed</label>
+                  <input id="dog-breed" name="breed" class="form-control" required>
+                  <div class="invalid-feedback">Please enter the breed.</div>
+                </div>
+              </div>
+
+              <div class="row g-3 mt-1">
+                <div class="col-md-6">
+                  <label class="form-label" for="dog-age">Age</label>
+                  <input id="dog-age" name="age" type="number" min="0" step="1" class="form-control" required>
+                  <div class="invalid-feedback">Please enter an age of 0 or above.</div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="dog-owner">Owner</label>
+                  <input id="dog-owner" name="owner" class="form-control">
+                </div>
+              </div>
+
+              <div class="mt-3">
+                <label class="form-label" for="dog-photo">Photo URL</label>
+                <input id="dog-photo" name="photo" type="url" class="form-control" placeholder="https://...">
+                <div class="invalid-feedback">Please enter a valid URL or leave it blank.</div>
+              </div>
+
+              <div class="mt-3">
+                <label class="form-label" for="dog-notes">Notes</label>
+                <textarea id="dog-notes" name="notes" class="form-control" rows="4"></textarea>
+              </div>
+
+              <button id="dog-submit-btn" class="btn btn-success w-100 mt-4" type="submit">Save profile</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="/app.js"></script>
