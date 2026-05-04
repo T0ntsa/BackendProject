@@ -54,13 +54,18 @@
     return String(value);
   };
 
-  const escapeHtml = (value) => textOf(value, "").replace(/[&<>"']/g, (char) => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#039;",
-  })[char]);
+  const escapeHtml = (value) =>
+    textOf(value, "").replace(
+      /[&<>"']/g,
+      (char) =>
+        ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#039;",
+        })[char],
+    );
 
   const formatDate = (value) => {
     if (!value) return "-";
@@ -108,7 +113,12 @@
     }
 
     if (!response.ok) {
-      throw new Error(data.error || data.message || data.msg || "Request failed. Please try again.");
+      throw new Error(
+        data.error ||
+          data.message ||
+          data.msg ||
+          "Request failed. Please try again.",
+      );
     }
 
     return data;
@@ -126,12 +136,15 @@
 
   const renderUser = () => {
     $("#current-user-name").textContent = user.fullName || user.email;
-    $("#current-user-role").textContent = `${labels[user.role] || user.role} · ${user.email}`;
+    $("#current-user-role").textContent =
+      `${labels[user.role] || user.role} · ${user.email}`;
   };
 
   const renderStats = () => {
     $("#task-count").textContent = state.tasks.length;
-    $("#pending-count").textContent = state.tasks.filter((task) => task.status === "pending").length;
+    $("#pending-count").textContent = state.tasks.filter(
+      (task) => task.status === "pending",
+    ).length;
     $("#dog-count").textContent = state.dogs.length;
     $("#trainer-count").textContent = state.trainers.length;
   };
@@ -148,19 +161,22 @@
     }
 
     empty.classList.add("d-none");
-    body.innerHTML = state.tasks.map((task) => {
-      const dogName = task.dog ? task.dog.name : "-";
-      const trainerName = task.assignedTo ? task.assignedTo.fullName : "-";
-      const canEdit = canManageTask(task);
-      const priorityLabel = labels[task.priority] || task.priority || "Medium";
-      const deleteButton = canDeleteTask()
-        ? `<button class="btn btn-outline-danger btn-sm" type="button" data-action="delete-task" data-id="${escapeHtml(idOf(task))}">Delete</button>`
-        : "";
+    body.innerHTML = state.tasks
+      .map((task) => {
+        const dogName = task.dog ? task.dog.name : "-";
+        const trainerName = task.assignedTo ? task.assignedTo.fullName : "-";
+        const canEdit = canManageTask(task);
+        const priorityLabel =
+          labels[task.priority] || task.priority || "Medium";
+        const taskTitle = escapeHtml(task.title || "Untitled task");
+        const deleteButton = canDeleteTask()
+          ? `<button class="btn btn-outline-danger btn-sm" type="button" data-action="delete-task" data-id="${escapeHtml(idOf(task))}" aria-label="Delete task: ${taskTitle}">Delete</button>`
+          : "";
 
-      return `
+        return `
         <tr>
           <td>
-            <strong>${escapeHtml(task.title)}</strong>
+            <strong>${taskTitle}</strong>
             <div class="small text-muted">${escapeHtml(priorityLabel)} priority</div>
           </td>
           <td>${escapeHtml(dogName)}</td>
@@ -169,13 +185,14 @@
           <td>${escapeHtml(formatDate(task.dueDate))}</td>
           <td class="text-end">
             <div class="task-row-actions">
-              <button class="btn btn-outline-success btn-sm" type="button" data-action="edit-task" data-id="${escapeHtml(idOf(task))}" ${canEdit ? "" : "disabled"}>Edit</button>
+              <button class="btn btn-outline-success btn-sm" type="button" data-action="edit-task" data-id="${escapeHtml(idOf(task))}" aria-label="Edit task: ${taskTitle}" ${canEdit ? "" : "disabled"}>Edit</button>
               ${deleteButton}
             </div>
           </td>
         </tr>
       `;
-    }).join("");
+      })
+      .join("");
   };
 
   const renderDogs = () => {
@@ -189,24 +206,28 @@
     }
 
     empty.classList.add("d-none");
-    list.innerHTML = state.dogs.map((dog) => {
-      const photoStyle = dog.photo ? `style="background-image: linear-gradient(rgba(29, 63, 49, 0.1), rgba(29, 63, 49, 0.1)), url('${escapeHtml(dog.photo)}')"` : "";
-      const canEdit = user.role === "admin";
-      const deleteButton = canDeleteDog()
-        ? `<button class="btn btn-outline-danger btn-sm" type="button" data-action="delete-dog" data-id="${escapeHtml(idOf(dog))}">Delete</button>`
-        : "";
+    list.innerHTML = state.dogs
+      .map((dog) => {
+        const dogName = escapeHtml(dog.name || "Unnamed dog");
+        const photoStyle = dog.photo
+          ? `style="background-image: linear-gradient(rgba(29, 63, 49, 0.1), rgba(29, 63, 49, 0.1)), url('${escapeHtml(dog.photo)}')"`
+          : "";
+        const canEdit = user.role === "admin";
+        const deleteButton = canDeleteDog()
+          ? `<button class="btn btn-outline-danger btn-sm" type="button" data-action="delete-dog" data-id="${escapeHtml(idOf(dog))}" aria-label="Delete dog: ${dogName}">Delete</button>`
+          : "";
 
-      return `
+        return `
         <article class="dog-card">
-          <div class="dog-photo" ${photoStyle}></div>
+          <div class="dog-photo" aria-hidden="true" ${photoStyle}></div>
           <div class="dog-card-body">
             <div class="dog-card-header">
               <div class="dog-card-title">
-                <h3>${escapeHtml(dog.name)}</h3>
+                <h3>${dogName}</h3>
                 <div class="dog-meta">${escapeHtml(textOf(dog.breed, "Unknown breed"))} · ${escapeHtml(textOf(dog.age, "-"))} years old</div>
               </div>
               <div class="dog-card-actions">
-                <button class="btn btn-outline-success btn-sm" type="button" data-action="edit-dog" data-id="${escapeHtml(idOf(dog))}" ${canEdit ? "" : "disabled"}>Edit</button>
+                <button class="btn btn-outline-success btn-sm" type="button" data-action="edit-dog" data-id="${escapeHtml(idOf(dog))}" aria-label="Edit dog: ${dogName}" ${canEdit ? "" : "disabled"}>Edit</button>
                 ${deleteButton}
               </div>
             </div>
@@ -215,32 +236,50 @@
           </div>
         </article>
       `;
-    }).join("");
+      })
+      .join("");
   };
 
   const renderSelects = () => {
-    fillSelect($("#task-dog"), state.dogs, "Choose a dog", (dog) => `${dog.name} · ${dog.breed || "Unknown breed"}`);
-    fillSelect($("#task-assigned-to"), state.trainers, "Choose a trainer", (trainer) => `${trainer.fullName} · ${trainer.email}`);
+    fillSelect(
+      $("#task-dog"),
+      state.dogs,
+      "Choose a dog",
+      (dog) => `${dog.name} · ${dog.breed || "Unknown breed"}`,
+    );
+    fillSelect(
+      $("#task-assigned-to"),
+      state.trainers,
+      "Choose a trainer",
+      (trainer) => `${trainer.fullName} · ${trainer.email}`,
+    );
   };
 
   const applyRolePermissions = () => {
     const newTaskButton = $("#new-task-btn");
     if (newTaskButton) {
       newTaskButton.disabled = !canCreateTask();
-      newTaskButton.title = canCreateTask() ? "" : "Only administrators can create tasks.";
+      newTaskButton.title = canCreateTask()
+        ? ""
+        : "Only administrators can create tasks.";
     }
 
     updateTaskFormPermissions();
 
     const locked = user.role !== "admin";
-    document.querySelectorAll("#dog-form input, #dog-form select, #dog-form textarea, #dog-submit-btn").forEach((element) => {
-      element.disabled = locked;
-    });
+    document
+      .querySelectorAll(
+        "#dog-form input, #dog-form select, #dog-form textarea, #dog-submit-btn",
+      )
+      .forEach((element) => {
+        element.disabled = locked;
+      });
 
     document.querySelectorAll("#dogs-section .admin-note").forEach((note) => {
       if (locked) {
         note.classList.add("locked");
-        note.textContent = "This account can browse data. Use an administrator account to create or update records.";
+        note.textContent =
+          "This account can browse data. Use an administrator account to create or update records.";
       }
     });
   };
@@ -264,9 +303,13 @@
     const canSubmit = isEditing ? canManageTask(task) : canCreateTask();
     const note = $("#task-permission-note");
 
-    document.querySelectorAll("#task-form input, #task-form select, #task-form textarea, #task-submit-btn").forEach((element) => {
-      element.disabled = !canSubmit;
-    });
+    document
+      .querySelectorAll(
+        "#task-form input, #task-form select, #task-form textarea, #task-submit-btn",
+      )
+      .forEach((element) => {
+        element.disabled = !canSubmit;
+      });
 
     if (isEditing) {
       note.textContent = canSubmit
@@ -295,11 +338,19 @@
     resetTaskForm();
     setTaskFormOpen(true);
     $("#task-form").scrollIntoView({ behavior: "smooth", block: "start" });
+    // Move keyboard and screen-reader focus to the first input in the form
+    const firstInput = document.getElementById("task-title");
+    if (firstInput) {
+      firstInput.focus();
+    }
   };
 
   const closeTaskForm = () => {
     resetTaskForm();
     setTaskFormOpen(false);
+    // Return focus to the New Task button so keyboard users are not lost
+    const newTaskBtn = document.getElementById("new-task-btn");
+    if (newTaskBtn) newTaskBtn.focus();
   };
 
   const openDeleteTaskModal = (id) => {
@@ -425,6 +476,11 @@
     setTaskFormOpen(true);
     setSection("tasks");
     form.scrollIntoView({ behavior: "smooth", block: "start" });
+    // Move focus to the task title so screen readers announce the form
+    const firstInput = document.getElementById("task-title");
+    if (firstInput) {
+      firstInput.focus();
+    }
   };
 
   const editDog = (id) => {
@@ -444,6 +500,10 @@
     $("#dog-submit-btn").textContent = "Update profile";
     setSection("dogs");
     form.scrollIntoView({ behavior: "smooth", block: "start" });
+    const dogFormTitle = document.getElementById("dog-form-title");
+    if (dogFormTitle) {
+      dogFormTitle.focus();
+    }
   };
 
   const renderAll = () => {
@@ -487,7 +547,8 @@
 
     const dueDate = String(formData.get("dueDate"));
     if (dueDate) payload.dueDate = dueDate;
-    if (payload.status === "completed") payload.completedAt = new Date().toISOString();
+    if (payload.status === "completed")
+      payload.completedAt = new Date().toISOString();
 
     return payload;
   };
@@ -515,12 +576,25 @@
 
     $("#page-title").textContent = title;
     document.querySelectorAll(".side-link").forEach((button) => {
-      button.classList.toggle("active", button.dataset.section === section);
+      const isActive = button.dataset.section === section;
+      button.classList.toggle("active", isActive);
+      button.setAttribute("aria-pressed", isActive ? "true" : "false");
+      if (button.tagName && button.tagName.toLowerCase() === "a") {
+        if (isActive) button.setAttribute("aria-current", "page");
+        else button.removeAttribute("aria-current");
+      }
     });
     document.querySelectorAll(".content-section").forEach((content) => {
       content.classList.add("d-none");
     });
     $(`#${section}-section`).classList.remove("d-none");
+
+    if (section === "dogs") {
+      const dogsSectionTitle = document.getElementById("dogs-section-title");
+      if (dogsSectionTitle) {
+        dogsSectionTitle.focus();
+      }
+    }
   };
 
   document.addEventListener("click", (event) => {
@@ -579,10 +653,16 @@
     }
   });
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && !$("#delete-task-modal").classList.contains("d-none")) {
+    if (
+      event.key === "Escape" &&
+      !$("#delete-task-modal").classList.contains("d-none")
+    ) {
       closeDeleteTaskModal();
     }
-    if (event.key === "Escape" && !$("#delete-dog-modal").classList.contains("d-none")) {
+    if (
+      event.key === "Escape" &&
+      !$("#delete-dog-modal").classList.contains("d-none")
+    ) {
       closeDeleteDogModal();
     }
   });
@@ -660,5 +740,7 @@
 
   renderUser();
   applyRolePermissions();
+  // Ensure ARIA and active states are applied on initial load
+  setSection(state.activeSection);
   loadData();
 })();
