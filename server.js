@@ -4,6 +4,9 @@ const exphbs = require("express-handlebars");
 const fs = require("fs");
 const mongoose = require("mongoose");
 require("dotenv").config();
+// Add at the top with other requires
+const cors = require('cors');
+
 
 
 const app = express();
@@ -12,7 +15,11 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-
+// Add this after your middleware setup
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true
+}));
 
 // Connect to MongoDB
 const connectDB = async () => {
